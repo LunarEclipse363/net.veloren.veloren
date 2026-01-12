@@ -4,7 +4,11 @@ runtime-version: '25.08'
 sdk: org.freedesktop.Sdk
 command: veloren-voxygen
 finish-args:
+  # For Flatpak 1.14.x backwards compatibility
   - --device=all
+  # Switch to these once the oldest supported Flatpak is >=1.15.6
+  #- --device=dri
+  #- --device=input
   - --filesystem=xdg-pictures/veloren:create
   - --share=ipc
   - --share=network
