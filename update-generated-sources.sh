@@ -27,7 +27,7 @@ SOURCE_TAG="$(jq -r '.tag' <<<"$SOURCE_OBJ")"
 
 CLONE_DIR="$(mktemp -d "${TMPDIR:-"/tmp"}/$MODULE_NAME.XXXXXX")"
 
-git clone --depth=1 --branch="$SOURCE_TAG" "$SOURCE_URL" "$CLONE_DIR"
+GIT_LFS_SKIP_SMUDGE=1 git clone --depth=1 --branch="$SOURCE_TAG" "$SOURCE_URL" "$CLONE_DIR"
 
 while read -r patch_path; do
     echo "Applying patch $patch_path" >> /dev/stderr
