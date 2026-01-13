@@ -27,7 +27,7 @@ SOURCE_TAG="$(jq -r '.tag' <<<"$SOURCE_OBJ")"
 
 CLONE_DIR="$(mktemp -d "${TMPDIR:-"/tmp"}/$MODULE_NAME.XXXXXX")"
 
-git clone --depth=1 --branch="$SOURCE_TAG" "$SOURCE_URL" "$CLONE_DIR"
+GIT_LFS_SKIP_SMUDGE=1 git clone --depth=1 --branch="$SOURCE_TAG" "$SOURCE_URL" "$CLONE_DIR"
 
 while read -r patch_path; do
     echo "Applying patch $patch_path" >> /dev/stderr
@@ -37,7 +37,21 @@ done < <(
     <<<"$MODULE_OBJ"
 )
 
-python3 "$TOOLS_DIR/cargo/flatpak-cargo-generator.py" \
+TOOLS_VENV="$TOOLS_DIR/cargo/.venv"
+
+if ! test -d "$TOOLS_VENV"; then
+    python3 -m venv "$TOOLS_VENV"
+fi
+
+if ! "$TOOLS_VENV/bin/python3" -c 'pass'; then
+    echo 'It seems that your venv is broken!' >&2
+    echo Try deleting the following directory: "$TOOLS_VENV" >&2
+    exit 1
+fi
+
+"$TOOLS_VENV/bin/pip3" install "$TOOLS_DIR/cargo/"
+
+"$TOOLS_VENV/bin/python3" "$TOOLS_DIR/cargo/flatpak-cargo-generator.py" \
     --output "$MANIFEST_DIR/$GENERATED_SOURCES" \
     "$CLONE_DIR/Cargo.lock"
 
