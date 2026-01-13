@@ -75,6 +75,8 @@ modules:
         url: https://gitlab.com/veloren/veloren.git
         commit: a1be5a7bece7af43ebd76910eb0020c1cf3c0798
         tag: v0.17.0
+      - type: patch
+        path: metadata-fix-r0.17.patch
 
       # LLVM ERROR: out of memory on ARM
       - type: shell
